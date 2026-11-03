@@ -15,7 +15,7 @@ python -m venv .venv
 .venv\Scripts\activate.bat
 ```
 
-**Install Pandas**
+**Install Libraries**
 ```cmd
 pip install pandas
 pip install requests
