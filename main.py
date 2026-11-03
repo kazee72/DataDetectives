@@ -7,11 +7,11 @@ def main() -> None:
 
     zaehler_data: dict[str, Any] = get_zaehler_data()
     location_data: dict[str, Any] = get_location_data()
+    cleaned_location_data: dict[str, Any] = clean_location_data(location_data)
 
     write_formated_json_file(zaehler_data, "zaehler_data.json")
     write_formated_json_file(location_data, "location_data.json")
-
-
+    write_formated_json_file(clean_location_data, "cleaned_location_data.json")
 
 def get_zaehler_data() -> dict[str, Any]:
     url = "https://data.stadt-zuerich.ch/api/3/action/datastore_search"
@@ -39,17 +39,34 @@ def get_location_data() -> dict[str, Any]:
 
 
 def clean_location_data(location_data: dict[str, Any]) -> dict[str, Any]:
+    cleaned_data: dict[str, Any] = {}
+
+    locations: dict[str, Any] = location_data["features"]
+
+    for location in locations:
+        sub_dict: dict[str, str] = {}
+        location_id = location["properties"]["id1"]
+        location_name = location["properties"]["bezeichnung"]
+        direction_in = location["properties"]["richtung_in"]
+        direction_out = location["properties"]["richtung_out"]        
+
+        sub_dict["bezeichnung"] = location_name
+        sub_dict["in"] = direction_in
+        sub_dict["out"] = direction_out
+
+        cleaned_data[location_id] = sub_dict
+
+    return cleaned_data
+
+
+
+
+def match_locations(cleaned_location_data: dict[str, Any], zaehler_data: dict[str, Any]) -> dict[str, Any]:
     pass
 
 
 
-
-def match_locations(location_data: dict[str, Any], zaehler_data: dict[str, Any]) -> dict[str, Any]:
-    pass
-
-
-
-def write_formated_json_file(data, file_name):
+def write_formated_json_file(data: dict[Any, Any], file_name: str) -> None:
     data_encoded = json.dumps(data, indent=4)
 
     with open(f"data/{file_name}", "w") as data_file:
